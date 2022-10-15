@@ -10,6 +10,8 @@ with open(os.path.join(PROJECT_DIR, "config.json")) as f:
 
 DATA_DIR = os.path.join(PROJECT_DIR, "out")
 RAW_DATA_DIR = os.path.join(DATA_DIR, "raw")
+os.makedirs(RAW_DATA_DIR, exist_ok=True)
+
 CHUNKLIST_URL = CONFIG["chunklist_url"]
 TITLE = CONFIG["title"]
 CHUNKLIST_PATH = os.path.join(DATA_DIR, f"{TITLE}-chunklist.m3u8")
@@ -27,8 +29,6 @@ os.remove(CHUNKLIST_PATH)
 file_pattern = re.compile("[^\n].*_\d+\.ts")
 files = re.findall(file_pattern, chunklist)
 file_urls = [f"{BASE_URL}/{f}" for f in files]
-if not os.path.isdir(RAW_DATA_DIR):
-    os.mkdir(RAW_DATA_DIR)
 os.system("wget " + " ".join(file_urls) + f" -P {RAW_DATA_DIR}")
 
 # merge all ts files into one ts file + delete individual ts files
