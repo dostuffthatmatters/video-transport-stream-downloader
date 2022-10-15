@@ -18,7 +18,7 @@ media_some_video_id_2.ts
 ...
 ```
 
-After fetching the chunklist, the tool will download all `.ts` files, merge them into one big file and convert this file into an MP4 file. It uses `curl`, `wget` and `ffmpeg` under the hood.
+After fetching the chunklist, the tool will download all `.ts` files, merge them into one big file and convert this file into an MP4 file. It uses `wget` and `ffmpeg` under the hood.
 
 <br/>
 
@@ -26,7 +26,7 @@ After fetching the chunklist, the tool will download all `.ts` files, merge them
 
 1. Install python3 (https://www.python.org/)
 2. Install ffmpeg (https://ffmpeg.org/)
-3. Make sure the `curl`, `wget` and `cat` command work on your system
+3. Make sure the `wget` and `cat` command work on your system
 4. Use `config.default.json` to create a `config.json` file in the project directory
 5. Run `python3 main.py`
 

@@ -14,13 +14,13 @@ os.makedirs(RAW_DATA_DIR, exist_ok=True)
 
 CHUNKLIST_URL = CONFIG["chunklist_url"]
 TITLE = CONFIG["title"]
-CHUNKLIST_PATH = os.path.join(DATA_DIR, f"{TITLE}-chunklist.m3u8")
 MERGED_TS_PATH = os.path.join(DATA_DIR, f"{TITLE}-merged.ts")
 MERGED_MP4_PATH = os.path.join(DATA_DIR, f"{TITLE}-merged.mp4")
 BASE_URL = "/".join(CHUNKLIST_URL.split("/")[:-1])
+CHUNKLIST_PATH = os.path.join(DATA_DIR, CHUNKLIST_URL.split("/")[-1])
 
 # download the chunklist
-os.system(f"curl {CHUNKLIST_URL} > {CHUNKLIST_PATH}")
+os.system(f"wget {CHUNKLIST_URL} -P {DATA_DIR}")
 with open(CHUNKLIST_PATH) as f:
     chunklist = f.read()
 os.remove(CHUNKLIST_PATH)
