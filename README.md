@@ -1,4 +1,4 @@
-# Video Stream Downloader
+# Video Transport Stream Downloader
 
 ## 📦 What does it do?
 
@@ -18,13 +18,14 @@ media_some_video_id_2.ts
 ...
 ```
 
-This tool fetches the chunklist, then downloads all the `.ts` files, merges them into one big file and converts this file into an MP4 file. It uses `curl`, `wget` and `ffmpeg` under the hood.
+After fetching the chunklist, the tool will download all `.ts` files, merge them into one big file and convert this file into an MP4 file. It uses `curl`, `wget` and `ffmpeg` under the hood.
 
 # ⚔️ How to use it?
 
 1. Install python3 (https://www.python.org/)
 2. Install ffmpeg (https://ffmpeg.org/)
-3. Use `config.default.json` to create a `config.json` file in the project directory
-4. Run `python3 main.py`
+3. Make sure the `curl`, `wget` and `cat` command work on your system
+4. Use `config.default.json` to create a `config.json` file in the project directory
+5. Run `python3 main.py`
 
 🎁 Your output file can be found at `out/<config.title>.mp4`.
