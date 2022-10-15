@@ -1,2 +1,7 @@
 out/*
 !out/.gitkeep
+config.json
+
+.DS_Store
+*.pyc
+__pycache__
