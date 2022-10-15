@@ -15,12 +15,12 @@ os.makedirs(RAW_DATA_DIR, exist_ok=True)
 CHUNKLIST_URL = CONFIG["chunklist_url"]
 TITLE = CONFIG["title"]
 MERGED_TS_PATH = os.path.join(DATA_DIR, f"{TITLE}-merged.ts")
-MERGED_MP4_PATH = os.path.join(DATA_DIR, f"{TITLE}-merged.mp4")
+MERGED_MP4_PATH = os.path.join(DATA_DIR, f"{TITLE}.mp4")
 BASE_URL = "/".join(CHUNKLIST_URL.split("/")[:-1])
 CHUNKLIST_PATH = os.path.join(DATA_DIR, CHUNKLIST_URL.split("/")[-1])
 
 # download the chunklist
-os.system(f"wget {CHUNKLIST_URL} -P {DATA_DIR}")
+os.system(f"wget --quiet --show-progress {CHUNKLIST_URL} -P {DATA_DIR}")
 with open(CHUNKLIST_PATH) as f:
     chunklist = f.read()
 os.remove(CHUNKLIST_PATH)
@@ -29,7 +29,7 @@ os.remove(CHUNKLIST_PATH)
 file_pattern = re.compile("[^\n].*_\d+\.ts")
 files = re.findall(file_pattern, chunklist)
 file_urls = [f"{BASE_URL}/{f}" for f in files]
-os.system("wget " + " ".join(file_urls) + f" -P {RAW_DATA_DIR}")
+os.system("wget --quiet --show-progress " + " ".join(file_urls) + f" -P {RAW_DATA_DIR}")
 
 # merge all ts files into one ts file + delete individual ts files
 raw_ts_files = [os.path.join(RAW_DATA_DIR, f) for f in files]
@@ -39,5 +39,7 @@ shutil.rmtree(RAW_DATA_DIR)
 # convert the merged ts file into an mp4 file + delete merged ts file
 if os.path.isfile(MERGED_MP4_PATH):
     os.remove(MERGED_MP4_PATH)
-os.system(f"ffmpeg -i {MERGED_TS_PATH} -acodec copy -vcodec copy {MERGED_MP4_PATH}")
+os.system(
+    f"ffmpeg -loglevel error -i {MERGED_TS_PATH} -acodec copy -vcodec copy {MERGED_MP4_PATH}"
+)
 os.remove(MERGED_TS_PATH)
