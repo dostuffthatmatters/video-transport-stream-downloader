@@ -19,7 +19,7 @@ MERGED_TS_PATH = os.path.join(DATA_DIR, f"{TITLE}-merged.ts")
 MERGED_MP4_PATH = os.path.join(DATA_DIR, f"{TITLE}-merged.mp4")
 BASE_URL = "/".join(CHUNKLIST_URL.split("/")[:-1])
 
-# download the chunklist if not already cached
+# download the chunklist
 os.system(f"curl {CHUNKLIST_URL} > {CHUNKLIST_PATH}")
 with open(CHUNKLIST_PATH) as f:
     chunklist = f.read()
