@@ -1,4 +1,12 @@
 {
-    "chunklist_url": "https://.../chunklist.m3u8",
-    "title": "some-video-title"
+    "videos": [
+        {
+            "chunklist_url": "https://.../chunklist.m3u8",
+            "title": "some-video-title"
+        },
+        {
+            "chunklist_url": "https://.../other-chunklist.m3u8",
+            "title": "some-other-video-title"
+        }
+    ]
 }

@@ -68,4 +68,5 @@ def download_video(chunklist_url: str, title: str) -> None:
 
 
 if __name__ == "__main__":
-    download_video(CONFIG["chunklist_url"], CONFIG["title"])
+    for v in CONFIG["videos"]:
+        download_video(v["chunklist_url"], v["title"])
