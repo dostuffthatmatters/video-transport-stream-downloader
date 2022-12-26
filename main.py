@@ -26,7 +26,10 @@ def download_video(chunklist_url: str, title: str) -> None:
     # download the chunklist
     print(f"downloading chunklist")
     chunklist_path = os.path.join(DATA_DIR, chunklist_url.split("/")[-1])
-    os.system(f"wget --quiet {chunklist_url} -P {DATA_DIR}")
+    wget_call_exit_code = os.system(f"wget --quiet {chunklist_url} -P {DATA_DIR}")
+    if wget_call_exit_code != 0:
+        print(f"🔴 wget download of chunklist failed")
+        return
     with open(chunklist_path) as f:
         chunklist = f.read()
     os.remove(chunklist_path)
@@ -34,25 +37,34 @@ def download_video(chunklist_url: str, title: str) -> None:
     # download all ts files
     print(f"grouping chunks")
     base_url = "/".join(chunklist_url.split("/")[:-1])
-    file_pattern = re.compile("[^\n].*_\d+\.ts")
-    files = re.findall(file_pattern, chunklist)
-    file_count = len(files)
-    chunks = []
+    file_pattern = re.compile("[^\n].*\.ts")
+    raw_file_list = list(sorted(re.findall(file_pattern, chunklist)))
+    file_urls = [
+        (f if f.startswith("http") else f"{base_url}/{f}") for f in raw_file_list
+    ]
+    file_names = list(sorted([f.split("/")[-1] for f in raw_file_list]))
+    file_count = len(file_names)
+    url_chunks = []
     for i in range(10):
         start_i = round(i * file_count / 10)
         end_i = min(round((i + 1) * file_count / 10), file_count)
-        chunks.append([f"{base_url}/{f}" for f in files[start_i:end_i]])
-    assert sum([len(c) for c in chunks]) == file_count
+        url_chunks.append(file_urls[start_i:end_i])
+    assert sum([len(c) for c in url_chunks]) == file_count
 
     # download all ts files
     print(f"downloading chunks")
-    for i, c in enumerate(chunks):
-        os.system("wget --quiet " + " ".join(c) + f" -P {RAW_DATA_DIR}")
+    for i, c in enumerate(url_chunks):
+        wget_call_exit_code = os.system(
+            "wget --quiet " + " ".join(c) + f" -P {RAW_DATA_DIR}"
+        )
+        if wget_call_exit_code != 0:
+            print(f"🔴 wget download of video snippets failed")
+            return
         print(f"{(i+1) * 10}% done")
 
     # merge all ts files into one ts file + delete individual ts files
     print(f"merging ts chunks")
-    raw_ts_files = [os.path.join(RAW_DATA_DIR, f) for f in files]
+    raw_ts_files = [os.path.join(RAW_DATA_DIR, f) for f in file_names]
     os.system(f"cat " + " ".join(raw_ts_files) + f" > {MERGED_TS_PATH}")
     shutil.rmtree(RAW_DATA_DIR)
 
@@ -60,11 +72,14 @@ def download_video(chunklist_url: str, title: str) -> None:
     print(f"converting into mp4")
     if os.path.isfile(MERGED_MP4_PATH):
         os.remove(MERGED_MP4_PATH)
-    os.system(
+    ffmpeg_call_exit_code = os.system(
         f"ffmpeg -loglevel error -i {MERGED_TS_PATH} -acodec copy -vcodec copy {MERGED_MP4_PATH}"
     )
-    os.remove(MERGED_TS_PATH)
-    print(f"🟢 finished {title}.mp4")
+    if ffmpeg_call_exit_code == 0:
+        os.remove(MERGED_TS_PATH)
+        print(f"🟢 finished {title}.mp4")
+    else:
+        print(f"🔴 ffmpeg failed")
 
 
 if __name__ == "__main__":
